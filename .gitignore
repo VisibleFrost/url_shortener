@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+
+postgres_data/
+pg_data/
+
+.idea/
+.vscode/
+
+.DS_Store
+Thumbs.db

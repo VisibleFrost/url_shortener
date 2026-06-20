@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:16
+    container_name: url_db_container
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: shortener
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  
+  redis_cache:
+    image: redis:7-alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
+
+  web_app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://myuser:mypassword@url_db_container:5432/shortener
+      - REDIS_URL=redis://redis_cache:6379
+    depends_on:
+      - postgres_db
+      - redis_cache
+
+volumes:
+  pg_data:
